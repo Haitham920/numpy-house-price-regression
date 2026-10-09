@@ -177,8 +177,11 @@ def r_squared(y_true, y_pred):
     else:    
         return(1-(np.divide((np.sum((y_true-y_pred)**2)), (np.sum((y_true-np.mean(y_true, axis=0))**2)))))
 
-# Step 18 - residual_summary (not yet solved)
-# TODO: implement
+# Step 18 - residual_summary
+def residual_summary(y_true, y_pred):
+    # TODO: Return a compact dict summarizing prediction residuals...
+    errors=y_true-y_pred
+    return {'mean':np.mean(errors),'std':np.std(errors),'median_abs':np.median(np.abs(errors))}
 
 # Step 19 - prepare_cleaned_features (not yet solved)
 # TODO: implement
