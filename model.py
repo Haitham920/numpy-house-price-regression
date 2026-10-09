@@ -135,11 +135,11 @@ def subset_xy(X, y, indices):
 
 # Step 13 - ols_fit
 def ols_fit(X, y):
-    # TODO: return the ordinary-least-squares weight vector for a linear model.
-    A=X.T @ X
-    b=X.T @ y
-    return(np.linalg.solve(A,b))
-    pass
+    # lstsq minimizes ||X @ theta - y||^2 directly, without inverting X.T @ X.
+    # When columns are collinear, infinitely many theta fit equally well;
+    # lstsq returns the one with the smallest norm.
+    theta, *_ = np.linalg.lstsq(X, y, rcond=None)   # *_ discards the extra outputs (residuals, rank, singular values)
+    return theta
 
 # Step 14 - ols_predict
 def ols_predict(X, theta):
@@ -303,6 +303,11 @@ def evaluate_predictions(y_true, y_pred):
         'residual_summary': residual_summary(y_true, y_pred)
     }
 
-# Step 24 - house_price_pipeline (not yet solved)
-# TODO: implement
+# Step 24 - house_price_pipeline
+def ols_fit(X, y):
+    # lstsq minimizes ||X @ theta - y||^2 directly, without inverting X.T @ X.
+    # When columns are collinear, infinitely many theta fit equally well;
+    # lstsq returns the one with the smallest norm.
+    theta, *_ = np.linalg.lstsq(X, y, rcond=None)   # *_ discards the extra outputs (residuals, rank, singular values)
+    return theta
 
