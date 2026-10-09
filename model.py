@@ -7,6 +7,7 @@ Assembled from your step-by-step solutions.
 import numpy as np
 
 # Step 1 - impute_nan_with_mean
+import numpy as np
 def impute_nan_with_mean(X: np.ndarray) -> np.ndarray:
     """Replace every NaN in X with that column's nan-aware mean (all-NaN cols -> 0).
 
@@ -200,8 +201,19 @@ def prepare_cleaned_features(X, iqr_k=1.5):
     b=clip_columns(imp, iqr[0], iqr[1])
     return b
 
-# Step 20 - assemble_feature_matrix (not yet solved)
-# TODO: implement
+# Step 20 - assemble_feature_matrix
+import numpy as np
+def assemble_feature_matrix(X_num, ratio_num_idx, ratio_den_idx, cat_labels=None):
+    # TODO: build an extended feature matrix by appending a derived ratio...
+    num=X_num[ratio_num_idx]
+    den=X_num[ratio_den_idx]
+    mrf=make_ratio_feature(num, den, eps=1e-8)
+    xapp=append_column(X_num, mrf)
+    if (cat_labels!=None):
+        b=one_hot_encode(cat_labels)
+        a=np.concatenate([a,b], axis=0)
+    return a
+    pass
 
 # Step 21 - make_train_val_test (not yet solved)
 # TODO: implement
