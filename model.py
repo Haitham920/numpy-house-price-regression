@@ -89,8 +89,14 @@ def one_hot_encode(labels):
     return binmat
     pass
 
-# Step 7 - fit_standardizer (not yet solved)
-# TODO: implement
+# Step 7 - fit_standardizer
+def fit_standardizer(X):
+    # TODO: Compute per-column mean and std used to standardize features... 
+    mean=np.mean(X, axis=0)
+    std=np.std(X,axis=0)
+    mask=np.where(std==0)[0]
+    std[mask]=1.0
+    return(mean,std)
 
 # Step 8 - apply_standardizer (not yet solved)
 # TODO: implement
