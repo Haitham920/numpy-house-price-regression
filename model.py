@@ -304,10 +304,40 @@ def evaluate_predictions(y_true, y_pred):
     }
 
 # Step 24 - house_price_pipeline
-def ols_fit(X, y):
-    # lstsq minimizes ||X @ theta - y||^2 directly, without inverting X.T @ X.
-    # When columns are collinear, infinitely many theta fit equally well;
-    # lstsq returns the one with the smallest norm.
-    theta, *_ = np.linalg.lstsq(X, y, rcond=None)   # *_ discards the extra outputs (residuals, rank, singular values)
-    return theta
+import numpy as np
+
+def house_price_pipeline(X, y, ratio_num_idx, ratio_den_idx, cat_labels=None,
+                         train_ratio=0.7, val_ratio=0.15, seed=0, iqr_k=1.5):
+    """
+    End-to-end house price prediction pipeline with optional categorical one-hot encoding.
+    """
+    # 1. Clean numerical feature matrix matching the function's exact signature
+    X_clean = prepare_cleaned_features(X, iqr_k=iqr_k)
+    
+    # 2. Assemble extended feature matrix (numeric + ratio + optional one-hot columns)
+    X_feat = assemble_feature_matrix(
+        X_clean, ratio_num_idx, ratio_den_idx, cat_labels=cat_labels
+    )
+    
+    # 3. Create reproducible train/validation/test splits
+    splits = make_train_val_test(X_feat, y, train_ratio, val_ratio, seed=seed)
+    
+    # 4. Standardize features based on training statistics and prepend bias column
+    std_splits, mean, std = standardize_and_add_bias(splits)
+    
+    # 5. Fit OLS model on standardized training set using robust least-squares
+    theta = ols_fit(std_splits['X_train'], std_splits['y_train'])
+    
+    # 6. Generate validation and test predictions
+    y_val_pred = ols_predict(std_splits['X_val'], theta)
+    y_test_pred = ols_predict(std_splits['X_test'], theta)
+    
+    # 7. Evaluate predictions and return complete dictionary
+    return {
+        'theta': theta,
+        'y_test': std_splits['y_test'],
+        'y_test_pred': y_test_pred,
+        'test_metrics': evaluate_predictions(std_splits['y_test'], y_test_pred),
+        'val_metrics': evaluate_predictions(std_splits['y_val'], y_val_pred)
+    }
 
