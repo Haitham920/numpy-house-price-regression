@@ -245,8 +245,37 @@ def make_train_val_test(X, y, train_ratio, val_ratio, seed=None):
         'y_test': y_shuffled[val_end:]
     }
 
-# Step 22 - standardize_and_add_bias (not yet solved)
-# TODO: implement
+# Step 22 - standardize_and_add_bias
+import numpy as np
+
+def standardize_and_add_bias(splits, eps=1e-8):
+    X_train = splits['X_train']
+    
+    # 1. Compute mean and standard deviation from X_train
+    mean = np.mean(X_train, axis=0)
+    std = np.std(X_train, axis=0)
+    
+    # 2. Handle constant features (std == 0) by replacing 0.0 with 1.0
+    std_adjusted = std.copy()
+    std_adjusted[std_adjusted < eps] = 1.0
+    
+    # Copy dictionary structure
+    std_splits = splits.copy()
+    
+    # 3. Transform features and prepend bias column
+    for key in ['X_train', 'X_val', 'X_test']:
+        if key in splits:
+            X = splits[key]
+            
+            # Standardize using adjusted std
+            X_std = (X - mean) / std_adjusted
+            
+            # Prepend bias column of ones
+            bias_col = np.ones((X_std.shape[0], 1), dtype=X_std.dtype)
+            std_splits[key] = np.hstack([bias_col, X_std])
+            
+    # Return std with zero-std values replaced by 1.0 to match expected output
+    return std_splits, mean, std_adjusted
 
 # Step 23 - evaluate_predictions (not yet solved)
 # TODO: implement
