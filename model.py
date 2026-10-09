@@ -202,18 +202,21 @@ def prepare_cleaned_features(X, iqr_k=1.5):
     return b
 
 # Step 20 - assemble_feature_matrix
-import numpy as np
 def assemble_feature_matrix(X_num, ratio_num_idx, ratio_den_idx, cat_labels=None):
-    # TODO: build an extended feature matrix by appending a derived ratio...
-    num=X_num[ratio_num_idx]
-    den=X_num[ratio_den_idx]
-    mrf=make_ratio_feature(num, den, eps=1e-8)
-    xapp=append_column(X_num, mrf)
-    if (cat_labels!=None):
-        b=one_hot_encode(cat_labels)
-        a=np.concatenate([a,b], axis=0)
+    # 1. Extract 1-D feature columns using 2D slicing [:, col_idx]
+    num = X_num[:, ratio_num_idx]
+    den = X_num[:, ratio_den_idx]
+    
+    # 2. Compute ratio and append as a new column
+    mrf = make_ratio_feature(num, den, eps=1e-8)
+    a = append_column(X_num, mrf)
+    
+    # 3. Horizontally stack one-hot encoded matrix if categorical labels are provided
+    if cat_labels is not None:
+        b = one_hot_encode(cat_labels)
+        a = np.hstack([a, b])  # Or np.concatenate([a, b], axis=1)
+        
     return a
-    pass
 
 # Step 21 - make_train_val_test (not yet solved)
 # TODO: implement
