@@ -277,8 +277,31 @@ def standardize_and_add_bias(splits, eps=1e-8):
     # Return std with zero-std values replaced by 1.0 to match expected output
     return std_splits, mean, std_adjusted
 
-# Step 23 - evaluate_predictions (not yet solved)
-# TODO: implement
+# Step 23 - evaluate_predictions
+import numpy as np
+
+def evaluate_predictions(y_true, y_pred):
+    """
+    Evaluates prediction metrics and residual summary for ground-truth and predicted values.
+    
+    Parameters:
+    -----------
+    y_true : np.ndarray
+        Ground-truth targets, shape (N,).
+    y_pred : np.ndarray
+        Predicted values, shape (N,).
+        
+    Returns:
+    --------
+    metrics : dict
+        Dictionary containing 'mae', 'rmse', 'r2', and 'residual_summary'.
+    """
+    return {
+        'mae': float(mean_absolute_error(y_true, y_pred)),
+        'rmse': float(root_mean_squared_error(y_true, y_pred)),
+        'r2': float(r_squared(y_true, y_pred)),
+        'residual_summary': residual_summary(y_true, y_pred)
+    }
 
 # Step 24 - house_price_pipeline (not yet solved)
 # TODO: implement
